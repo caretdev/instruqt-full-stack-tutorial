@@ -1,9 +1,3 @@
--- @Block
-DROP TABLE ICO.inventory;
-
-DROP TABLE ICO.catalog;
-
--- @Block
 CREATE TABLE ICO.inventory
 (
 vendor_id VARCHAR(128), 
