@@ -1,0 +1,7 @@
+{
+  "files.associations": {
+    "solve-*": "shellscript",
+    "check-*": "shellscript",
+    "setup-*": "shellscript"
+  }
+}
