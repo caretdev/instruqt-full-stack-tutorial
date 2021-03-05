@@ -1,0 +1,23 @@
+#!/bin/bash
+
+su - irisowner <<EOSU
+cat <<EOF | iris session iris -UUSER
+set sc = ##class(%SQL.Statement).%New().%Prepare("SELECT vendor_id,vendor_product_code,quantity_kg, date_arrival FROM ICO.inventory")
+if 'sc do ##class(%SYSTEM.Process).Terminate(,1)
+set sc = ##class(%SQL.Statement).%New().%Prepare("SELECT catalog_id, product_code, quantity, price, time_roasted, roasting_notes, img FROM ICO.catalog")
+if 'sc do ##class(%SYSTEM.Process).Terminate(,2)
+halt
+EOF
+EOSU
+
+exit=$?
+
+if [ $exit -eq 1 ]; then 
+  fail-message "Table ICO.inventory does not exists"
+fi
+
+if [ $exit -eq 2 ]; then 
+  fail-message "Table ICO.catalog does not exists"
+fi
+
+exit $exit

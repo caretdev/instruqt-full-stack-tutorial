@@ -1,0 +1,30 @@
+#!/bin/bash
+
+su - irisowner <<'EOSU'
+cat <<'EOF' | iris session iris -UUSER
+set tRs = ##class(%SQL.Manager.Catalog).CachedQueryTableFunc("ICO","inventory")
+while tRs.%Next() { set query = $Piece($zstrip(tRs.Query_"/*#", "<WC"),"/*#") Set tQueries(query) = "" }
+zw tQueries
+if '$Data(tQueries("SELECT * FROM ICO . inventory")) do ##class(%SYSTEM.Process).Terminate(,1)
+if '$Data(tQueries("SELECT * FROM ICO . inventory WHERE quantity_kg > ? ")) do ##class(%SYSTEM.Process).Terminate(,2)
+if '$Data(tQueries("SELECT * FROM ICO . inventory WHERE vendor_id LIKE ? ")) do ##class(%SYSTEM.Process).Terminate(,3)
+halt
+EOF
+EOSU
+
+exit=$?
+
+if [ $exit -eq 1 ]; then 
+  fail-message "How many records in ICO.inventory?"
+fi
+
+if [ $exit -eq 2 ]; then 
+  fail-message "What is about large deliveries?"
+fi
+
+if [ $exit -eq 2 ]; then 
+  fail-message "What was delivered from DKE?"
+fi
+
+
+exit $exit

@@ -1,0 +1,7 @@
+#!/bin/bash
+
+su - irisowner <<EOSU
+/usr/irissys/dev/Cloud/ICM/waitISC.sh
+iris session iris -U%SYS '##class(Security.Users).UnExpireUserPasswords("*")'
+iris session iris -U%SYS '##class(Security.Users).Create("tech","%ALL","demo")'
+EOSU

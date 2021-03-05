@@ -1,0 +1,170 @@
+slug: full-stack-tutorial
+id: s0ynild6wctq
+type: track
+title: Full Stack Tutorial
+teaser: Example VSCode track
+description: |-
+  InterSystems IRIS® data platform provides a fast, reliable database and handles business logic and analytics,
+  creating a strong backbone for the IT architecture of any company. It’s first and foremost your multi-model database,
+  but also can be your middleware to handle business logic, your analytics platform, and also provide machine learning,
+  ETL and IoT processing functions.
+
+  In this tutorial, we’re going to create the basic information management infrastructure for a small manufacturing company.
+  In this case, our company will be roasting, packaging and selling delicious, freshly roasted coffee beans.
+  Along the way, you’ll learn how the InterSystems IRIS data platform can serve as the backbone of your IT architecture.
+
+  ![overview](https://dev-start.intersystems.com/wp-content/uploads/2020/07/overview_arch.png)
+icon: https://cdn.instruqt.com/assets/intersystems/vscode.png
+tags: []
+owner: intersystems
+developers:
+- ade@instruqt.com
+- dmitry@caretdev.com
+private: true
+published: false
+challenges:
+- slug: create-db
+  id: rc49n14ohxmg
+  type: challenge
+  title: Databases and SQL
+  teaser: Database creation
+  assignment: |-
+    Paste the following SQL CREATE statement and press Execute.
+    ```SQL
+    CREATE TABLE ICO.inventory
+    (
+      vendor_id VARCHAR(128),
+      vendor_product_code VARCHAR(128),
+      quantity_kg DECIMAL(10,2),
+      date_arrival DATE
+    )
+    ```
+
+    Copy and paste the following SQL CREATE statement to create ICO.catalog table and press Execute.
+    ```SQL
+    CREATE TABLE ICO.catalog
+    (
+      catalog_id BIGINT IDENTITY,
+      product_code VARCHAR(128),
+      quantity INTEGER,
+      price DECIMAL(10,2),
+      time_roasted DATETIME,
+      roasting_notes VARCHAR(2048),
+      img VARCHAR(2048)
+    )
+    ```
+  notes:
+  - type: text
+    contents: |-
+      In this tutorial, we’re going to create the basic information management
+      infrastructure for a small manufacturing company. In this case, our company
+      will be roasting, packaging and selling delicious, freshly roasted coffee beans.
+
+      Along the way, you’ll learn how the InterSystems IRIS data platform can serve
+      as the backbone of your IT architecture.
+
+      It’s divided into three parts:
+      - part 1: create database tables and write raw coffee bean deliveries to the database.
+      - part 2: build web services that power the roasting operations and online store.
+      - part 3: build a web storefront in Vue.js
+  tabs:
+  - title: IRIS
+    type: service
+    hostname: iris
+    path: /csp/sys/exp/%25CSP.UI.Portal.SQL.Home.zen?$NAMESPACE=USER&IRISUsername=_SYSTEM&IRISPassword=SYS
+    port: 52773
+  difficulty: basic
+  timelimit: 900
+- slug: python-data-loading
+  id: 101uev0fgbmq
+  type: challenge
+  title: Python data loading
+  teaser: A short description of the challenge.
+  assignment: |-
+    Open terminal, from menu View.
+
+    Setup odbc driver
+    ```
+    sudo odbcinst -i -d -f pyodbc_wheel/odbcinst.ini
+    ```
+
+    Execute python script
+    ```
+    python3 manifest_importer.py
+    ```
+  notes:
+  - type: text
+    contents: Replace this text with your own text
+  tabs:
+  - title: VSCode
+    type: service
+    hostname: vscode
+    path: /?folder=/opt/intersystems/src/setup
+    port: 8080
+  difficulty: basic
+  timelimit: 900
+- slug: sql-queries
+  id: iuhf83icltd0
+  type: challenge
+  title: SQL database queries
+  teaser: Let’s make sure the data was inserted
+  assignment: |-
+    Execute SQL Query
+    ```
+    select * from ICO.inventory
+    ```
+    You should see five rows of raw coffee beans in inventory.
+
+    Try a couple queries to play with our inventory in more detail. See all large deliveries — over 100 kilograms. You might want to start roasting these first.
+    ```SQL
+    SELECT * FROM ICO.inventory WHERE quantity_kg > 100
+    ```
+
+    Or you may need to see all inventory from a particular vendor.
+    ```SQL
+    SELECT * FROM ICO.inventory WHERE vendor_id LIKE 'DKE'
+    ```
+  notes:
+  - type: text
+    contents: Let’s make sure the data was inserted
+  tabs:
+  - title: IRIS
+    type: service
+    hostname: iris
+    path: /csp/sys/exp/%25CSP.UI.Portal.SQL.Home.zen?$NAMESPACE=USER&IRISUsername=_SYSTEM&IRISPassword=SYS
+    port: 52773
+  - title: VSCode
+    type: service
+    hostname: vscode
+    path: /?folder=/opt/intersystems/src/setup
+    port: 8080
+  difficulty: basic
+  timelimit: 900
+- slug: add-new-inventory
+  id: o9crvqeawauj
+  type: challenge
+  title: Add your own inventory
+  teaser: Finally, add more inventory on your own.
+  assignment: |-
+    Edit `order_manifest.json` file in the IDE.
+
+    Change the values as you like.
+
+    Run python `manifest_importer.py` again.
+  notes:
+  - type: text
+    contents: Finally, add more inventory on your own.
+  tabs:
+  - title: VSCode
+    type: service
+    hostname: vscode
+    path: /?folder=/opt/intersystems/src/setup
+    port: 8080
+  - title: IRIS
+    type: service
+    hostname: iris
+    path: /csp/sys/exp/%25CSP.UI.Portal.SQL.Home.zen?$NAMESPACE=USER&IRISUsername=_SYSTEM&IRISPassword=SYS
+    port: 52773
+  difficulty: basic
+  timelimit: 900
+checksum: "17332530815275648055"
