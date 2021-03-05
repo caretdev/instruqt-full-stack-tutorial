@@ -1,3 +1,4 @@
+-- @Block
 CREATE TABLE ICO.inventory
 (
 vendor_id VARCHAR(128), 
@@ -16,3 +17,12 @@ time_roasted DATETIME,
 roasting_notes VARCHAR(2048),
 img VARCHAR(2048)
 )
+
+-- @Block
+select * from ICO.inventory
+
+-- @Block
+SELECT * FROM ICO.inventory WHERE quantity_kg > 100
+
+-- @Block
+SELECT * FROM ICO.inventory WHERE vendor_id LIKE 'DKE'
