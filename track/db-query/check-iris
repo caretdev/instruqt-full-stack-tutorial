@@ -1,0 +1,21 @@
+#!/bin/bash
+
+su - irisowner <<'EOSU'
+cat <<'EOF' | iris session iris -UUSER
+set tRs = ##class(%SQL.Manager.Catalog).CachedQueryTableFunc("ICO","inventory")
+while tRs.%Next() { set query = $Piece($zstrip(tRs.Query_"/*#", "<WC"),"/*#") Set tQueries(query) = "" }
+zw tQueries
+if '$Data(tQueries("SELECT * FROM ICO . inventory ORDER BY vendor_id")) do ##class(%SYSTEM.Process).Terminate(,1)
+halt
+EOF
+EOSU
+
+exit=$?
+
+if [ $exit -eq 1 ]; then 
+  fail-message "How many records in ICO.inventory?"
+fi
+
+
+
+exit $exit

@@ -20,6 +20,7 @@ owner: intersystems
 developers:
 - ade@instruqt.com
 - dmitry@caretdev.com
+- nikolay.solovyev@caretdev.com
 private: true
 published: false
 challenges:
@@ -167,4 +168,125 @@ challenges:
     port: 52773
   difficulty: basic
   timelimit: 900
-checksum: "17332530815275648055"
+- slug: os-db-query
+  id: cs0hpvve8izh
+  type: challenge
+  title: ObjectScript database query
+  teaser: Edit an object with ObjectScript
+  assignment: |-
+    Open IRIS Terminal
+
+    Type the following commands to get the ICO.inventory record having a primary key of 1.
+
+    Fetches record 1 from the database
+    ```
+    set item = ##class(ICO.inventory).%OpenId(1)
+    ```
+
+    Prints the record’s data to the screen
+    ```
+    zwrite item
+    ```
+
+    Changes a property’s value
+    ```
+    set item.quantitykg = 300
+    ```
+
+    Prints again to verify the change
+    ```
+    zwrite item
+    ```
+
+    Writes changed data to the database
+    ```
+    do item.%Save()
+    ```
+  notes:
+  - type: text
+    contents: "A well-designed system never allows business applications to operate
+      directly on the database. Instead, we provide access via services so that we
+      can control and monitor the actions taken. \nIn the next steps, we build out
+      the suite of RESTful web services needed for the business to function."
+  - type: text
+    contents: |-
+      With most databases, you have no choice but to use a middleware framework — for example, Java Spring, Python Flask, or Node.js Express, — and talk to the data layer via SQL. You can certainly do that with InterSystems IRIS as well, but you also have another easier and higher performance option:
+      * Code in ObjectScript: Get the performance of stored procedures, and the flexibility, power and ease-of-use of a real programming language.
+      * No middleware required: The web server and middleware layer are built-in!
+  - type: text
+    contents: Now let’s see how easy it is with ObjectScript, especially when you
+      want to get a record using its primary key.
+  tabs:
+  - title: IRIS Terminal
+    type: terminal
+    hostname: iris
+  - title: VSCode
+    type: service
+    hostname: vscode
+    path: /?folder=/opt/intersystems/src/setup
+    port: 8080
+  - title: IRIS
+    type: service
+    hostname: iris
+    path: /csp/sys/exp/%25CSP.UI.Portal.SQL.Home.zen?$NAMESPACE=USER&IRISUsername=_SYSTEM&IRISPassword=SYS
+    port: 52773
+  difficulty: basic
+  timelimit: 500
+- slug: db-query
+  id: yl5kgs1or3ul
+  type: challenge
+  title: Database query with ObjectScript and SQL
+  teaser: Database query with ObjectScript and SQL
+  assignment: |-
+    Type in IRIS Terminal:
+
+    Sets a variable with a valid SQL SELECT statement
+    ```
+    set sqlquery = "SELECT * FROM ICO.inventory ORDER BY vendor_id"
+    ```
+
+    Executes the SELECT and stores a pointer to results in `rs`
+    ```
+    set rs = ##class(%SQL.Statement).%ExecDirect(,sqlquery)
+    ```
+
+    Iterates over `rs`, printing the `vendor_id` property
+    ```
+    while rs.%Next() { Write !, rs.%Get("vendor_id") }
+    ```
+  notes:
+  - type: text
+    contents: "Let’s perform a more complex query using SQL right in your ObjectScript
+      code. \n\nContinue using IRIS Terminal"
+  tabs:
+  - title: IRIS Terminal
+    type: terminal
+    hostname: iris
+  difficulty: basic
+  timelimit: 500
+- slug: os-classes
+  id: txkl7pug7nsz
+  type: challenge
+  title: ObjectScript Classes
+  teaser: Writing ObjectScript Classes
+  assignment: "* Create a new file in VSCode and name it Test.cls\n\n* In that file,
+    type:\n```\nClass ICO.Test\n{\n  ClassMethod QueryDB() As %Status\n  {\n    set
+    sqlquery = \"SELECT * FROM ICO.inventory\"\n    set rs = ##class(%SQL.Statement).%ExecDirect(,sqlquery)\n
+    \   while rs.%Next() {\n        Write !, rs.%Get(\"vendor_id\")\n    }\n  }\n}\n```\n\n*
+    Save the file\n\n* Run this method in IRIS Terminal \n```\ndo ##class(ICO.Test).QueryDB()\n```"
+  notes:
+  - type: text
+    contents: "That wasn’t very pretty because we put a lot of code on a single line.
+      \n\nNow let’s put our ObjectScript code in a file."
+  tabs:
+  - title: VSCode
+    type: service
+    hostname: vscode
+    path: /?folder=/opt/intersystems/src/setup
+    port: 8080
+  - title: IRIS Terminal
+    type: terminal
+    hostname: iris
+  difficulty: basic
+  timelimit: 500
+checksum: "1565931171913733567"
