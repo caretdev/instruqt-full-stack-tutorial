@@ -24,7 +24,7 @@ developers:
 private: true
 published: false
 challenges:
-- slug: create-db
+- slug: 01-create-db
   id: rc49n14ohxmg
   type: challenge
   title: Databases and SQL
@@ -76,7 +76,7 @@ challenges:
     port: 52773
   difficulty: basic
   timelimit: 900
-- slug: python-data-loading
+- slug: 02-python-data-loading
   id: 101uev0fgbmq
   type: challenge
   title: Python data loading
@@ -104,7 +104,7 @@ challenges:
     port: 8080
   difficulty: basic
   timelimit: 900
-- slug: sql-queries
+- slug: 03-sql-queries
   id: iuhf83icltd0
   type: challenge
   title: SQL database queries
@@ -141,7 +141,7 @@ challenges:
     port: 8080
   difficulty: basic
   timelimit: 900
-- slug: add-new-inventory
+- slug: 04-add-new-inventory
   id: o9crvqeawauj
   type: challenge
   title: Add your own inventory
@@ -168,7 +168,7 @@ challenges:
     port: 52773
   difficulty: basic
   timelimit: 900
-- slug: os-db-query
+- slug: 05-os-db-query
   id: cs0hpvve8izh
   type: challenge
   title: ObjectScript database query
@@ -232,7 +232,7 @@ challenges:
     port: 52773
   difficulty: basic
   timelimit: 500
-- slug: db-query
+- slug: 06-db-query
   id: yl5kgs1or3ul
   type: challenge
   title: Database query with ObjectScript and SQL
@@ -264,7 +264,7 @@ challenges:
     hostname: iris
   difficulty: basic
   timelimit: 500
-- slug: os-classes
+- slug: 07-os-classes
   id: txkl7pug7nsz
   type: challenge
   title: ObjectScript Classes
@@ -289,4 +289,4 @@ challenges:
     hostname: iris
   difficulty: basic
   timelimit: 500
-checksum: "1565931171913733567"
+checksum: "977812439377201704"
