@@ -1,6 +1,6 @@
 #!/bin/bash
 
-cat <<'EOF' > /tmp/ICO.Test.cls
+cat <<'EOF' > /opt/intersystems/src/services/src/ICO/Test.cls
 Class ICO.Test
 {
 
@@ -15,11 +15,3 @@ ClassMethod QueryDB() As %Status
 
 }
 EOF
-
-su - irisowner <<EOSU
-/usr/irissys/dev/Cloud/ICM/waitISC.sh
-cat <<'EOF' | iris session iris -UUSER
-do ##class(%SYSTEM.OBJ).Load("/tmp/ICO.Test.cls","ck")
-halt
-EOF
-EOSU

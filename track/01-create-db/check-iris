@@ -2,22 +2,20 @@
 
 su - irisowner <<EOSU
 cat <<EOF | iris session iris -UUSER
-set sc = ##class(%SQL.Statement).%New().%Prepare("SELECT vendor_id,vendor_product_code,quantity_kg, date_arrival FROM ICO.inventory")
-if 'sc do ##class(%SYSTEM.Process).Terminate(,1)
-set sc = ##class(%SQL.Statement).%New().%Prepare("SELECT catalog_id, product_code, quantity, price, time_roasted, roasting_notes, img FROM ICO.catalog")
-if 'sc do ##class(%SYSTEM.Process).Terminate(,2)
+
+set sql = "SELECT vendor_id,vendor_product_code,quantity_kg, date_arrival FROM ICO.inventory"
+set msg = "Table ICO.inventory does not exists"
+do ##class(%zInstruqt.Check).CheckSQLExec(sql, msg, .errors)
+
+set sql = "SELECT catalog_id, product_code, quantity, price, time_roasted, roasting_notes, img FROM ICO.catalog"
+set msg = "Table ICO.catalog does not exists"
+do ##class(%zInstruqt.Check).CheckSQLExec(sql, msg, .errors)
+
+do ##class(%zInstruqt.Check).Failure(.errors)
 halt
 EOF
 EOSU
 
 exit=$?
-
-if [ $exit -eq 1 ]; then 
-  fail-message "Table ICO.inventory does not exists"
-fi
-
-if [ $exit -eq 2 ]; then 
-  fail-message "Table ICO.catalog does not exists"
-fi
 
 exit $exit

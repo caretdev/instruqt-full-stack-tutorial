@@ -3,26 +3,12 @@
 su - irisowner <<'EOSU'
 cat <<'EOF' | iris session iris -UUSER
 set tClassDef = ##class(%Dictionary.ClassDefinition).%OpenId("ICO.Test")
-if '$Isobject(tClassDef) { do ##class(%SYSTEM.Process).Terminate(,1) }
-set key = ""
-for {
-  set tMethod = tClassDef.Methods.GetNext(.key)
-  quit:(key="")
-  quit:((tMethod.Name="QueryDB")&&(tMethod.ClassMethod=1))
-}
-if (key = "") { do ##class(%SYSTEM.Process).Terminate(,2) }
+if '$Isobject(tClassDef) { do ##class(%zInstruqt.Check).Failure("Did you save the file?") }
+if '$system.CLS.IsMthd("ICO.Test", "QueryDB") { do ##class(%zInstruqt.Check).Failure("Did you define the method?") }
+
 halt
 EOF
 EOSU
 
 exit=$?
-
-if [ $exit -eq 1 ]; then 
-  fail-message "Did you save the file?"
-fi
-
-if [ $exit -eq 2 ]; then 
-  fail-message "Did you define the method?"
-fi
-
 exit $exit

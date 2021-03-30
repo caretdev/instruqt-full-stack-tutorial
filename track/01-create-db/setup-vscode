@@ -72,7 +72,7 @@ git clone --depth=1 git@github.com:caretdev/instruqt-full-stack-tutorial.git .
 rm -rf .git
 EOSU
 
-sed -i 's|WORKDIR="$HOME"|WORKDIR="/opt/intersystems/src/setup"|g' ~/.bashrc
+set-workdir /opt/intersystems/src/setup
 
 echo 'su - coder -s /bin/bash' > /root/coder
 chmod +x /root/coder
@@ -114,7 +114,11 @@ cat <<EOF > ~/.local/share/code-server/User/settings.json
   "sqltools.useNodeRuntime": true,
   "files.associations": {
     "*.config": "plaintext"
-  }
+  },
+  "[objectscript-class]": {
+    "editor.tabSize": 2,
+    "editor.insertSpaces": true
+  },
 }
 EOF
 

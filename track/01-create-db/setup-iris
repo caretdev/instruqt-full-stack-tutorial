@@ -1,7 +1,66 @@
 #!/bin/bash
 
+cat <<'EOF' > /tmp/Instruqt.Check.cls
+Class %zInstruqt.Check
+{
+
+ClassMethod AddError(ByRef errors = 0, failureMsg As %String)
+{
+  set errors($Increment(errors)) = failureMsg
+}
+
+ClassMethod Failure(ByRef errors = 0, halt As %Boolean = 1)
+{
+  if $data(errors)=1,errors'=0 {
+    set failureMsg = errors, errors = 0
+    do ..AddError(.errors, failureMsg)
+  }
+  zwrite errors
+  for i=1:1:errors {
+    do $zf(-100, "/SHELL", "fail-message", errors(i))
+  }
+  if halt {
+    set exit = errors > 0
+    do ##class(%SYSTEM.Process).Terminate(,exit)
+  }
+}
+
+ClassMethod CheckSQLPrepare(sql, failureMsg As %String, ByRef errors)
+{
+  Set tSC = ##class(%SQL.Statement).%New().%Prepare(sql)
+  If $$$ISERR(tSC) {
+    do ..AddError(.errors, failureMsg)
+  }
+}
+
+ClassMethod CheckSQLExec(sql, failureMsg As %String, ByRef errors)
+{
+  Set tRes = ##class(%SQL.Statement).%ExecDirect(,sql)
+  If tRes.%SQLCODE'=0 {
+    do ..AddError(.errors, failureMsg)
+  }
+}
+
+ClassMethod CachedQuery(scheme, table, sql, failureMsg, ByRef errors)
+{
+  set tRs = ##class(%SQL.Manager.Catalog).CachedQueryTableFunc(scheme, table)
+  while tRs.%Next() { set query = $Piece($zstrip(tRs.Query_"/*#", "<WC"),"/*#") Set tQueries(query) = "" }
+  zwrite tQueries
+  if '$Data(tQueries(sql)) {
+    do ..AddError(.errors, failureMsg)
+  }
+}
+
+}
+EOF
+
 su - irisowner <<EOSU
 /usr/irissys/dev/Cloud/ICM/waitISC.sh
-iris session iris -U%SYS '##class(Security.Users).UnExpireUserPasswords("*")'
-iris session iris -U%SYS '##class(Security.Users).Create("tech","%ALL","demo")'
+cat <<'EOF' | iris session iris -U%SYS
+do ##class(Security.Users).UnExpireUserPasswords("*")
+do ##class(Security.Users).Create("tech","%ALL","demo")
+do ##class(%SYSTEM.OBJ).Load("/tmp/Instruqt.Check.cls","ck")
+halt
+EOF
 EOSU
+
