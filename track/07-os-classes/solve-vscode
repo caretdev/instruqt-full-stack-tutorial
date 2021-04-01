@@ -9,7 +9,7 @@ ClassMethod QueryDB() As %Status
   set sqlquery = "SELECT * FROM ICO.inventory"
   set rs = ##class(%SQL.Statement).%ExecDirect(,sqlquery)
   while rs.%Next() {
-      Write !, rs.%Get("vendor_id")
+    Write !, rs.%Get("vendor_id")
   }
 }
 

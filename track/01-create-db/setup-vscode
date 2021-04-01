@@ -122,3 +122,29 @@ cat <<EOF > ~/.local/share/code-server/User/settings.json
 }
 EOF
 
+cat <<'EOF' >> /bin/iris-import
+#!/bin/bash
+
+path=$1
+doc=$2
+
+url=http://iris:52773/api/atelier/v1/USER
+
+auth=(-u _SYSTEM:SYS)
+args=(-v -H 'Content-Type: application/json' --data-binary @-)
+
+# Put doc
+jq --raw-input --slurp 'split("\n")' $path \
+  | jq '{ enc: false, content: .}' \
+  | curl -X PUT "${auth[@]}" "${args[@]}" $url/doc/$doc?ignoreConflict=1
+
+# Compile
+echo "[\"${doc}\"]" | curl "${auth[@]}" "${args[@]}" $url/action/compile
+
+# Export to file
+curl "${auth[@]}" $url/doc/$doc \
+  | jq '.result.content[]' --raw-output > $path
+
+EOF
+
+chmod +x /bin/iris-import

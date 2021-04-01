@@ -276,7 +276,7 @@ challenges:
   assignment: |-
     * Expand src, then ICO.
     * Right-click on the ICO folder and select “New File”.
-    * Name it Test.cls.
+    * Name it `Test.cls`.
     * In that file, type:
     ```
     Class ICO.Test
@@ -287,7 +287,7 @@ challenges:
       set sqlquery = "SELECT * FROM ICO.inventory"
       set rs = ##class(%SQL.Statement).%ExecDirect(,sqlquery)
       while rs.%Next() {
-          Write !, rs.%Get("vendor_id")
+        Write !, rs.%Get("vendor_id")
       }
     }
 
@@ -315,4 +315,196 @@ challenges:
     hostname: iris
   difficulty: basic
   timelimit: 500
-checksum: "804207396336507964"
+- slug: 08-build-web-services
+  id: 5shnvzylcwk2
+  type: challenge
+  title: Build Web Services
+  teaser: Build Web Services
+  assignment: |-
+    We need to make a few changes to the ObjectScript code thatrepresents
+    our database tables so that we can also output the data as JSON.
+    But first let’s look at the code already in the database.
+
+    * In the VSCode, click on the InterSystems icon to view the ObjectScript Explorer.
+    This shows you the code that’s been loaded and compiled on the database server, rather than the local version of code you work on.
+    * Expand the folders `Classes` and `ICO` and you see two files with familiar names, `catalog` and `inventory` (with .cls extensions).
+    When we created database tables in part 1 using SQL statements, companion ObjectScript classes were also created at the same time.
+    * Click on `catalog.cls`. Note that columns are called Properties, but the data type and range restrictions should look familiar.
+    Also look at `inventory.cls`
+    * Close any files you have opened.
+
+    ### JSON-enable the Data Tables
+
+    We need to change these classes slightly to enable JSON output, and make that output look nice, so let’s do that now.
+
+    * Go back to the normal file explorer by clicking the documents icon Theia documents icon.
+    * Copy `catalog.cls` and `inventory.cls` from `src_Sample/ICO` folder to `src/ICO`
+    * Open and save both files, and choose the “Overwrite server” option.
+    This uploads and compiles your new versions of these classes with the addition of %JSON.Adapter and %JSONFIELDNAME.
+
+    We did 2 things in these files:
+    * Extend `%JSON.Adapter` to enable automatic JSON output of this table’s data.
+    * Add `%JSONFIELDNAME` “property parameters” to selected Properties, to change its name when used in JSON output.
+  notes:
+  - type: text
+    contents: |-
+      That was a gentle introduction to ObjectScript.
+      Now let’s use what you’ve learned to build the web services needed to power our coffee roasting business. We will:
+
+      * Copy and compile pre-written code to the database
+      * JSON-enable the database tables
+      * Examine how each RESTful API is built
+      * Deploy and test the web services using curl and the browser
+      * Use a web service to move coffee from inventory to the store
+      * Record sales
+  - type: text
+    contents: |-
+      In part 1 we created database tables using standard SQL.
+      What we didn’t mention is that behind the scenes, corresponding ObjectScript classes were created as well!
+      This lets developers easily switch between SQL and code depending on which style makes sense for the task at hand.
+
+      ![image](https://dev-start.intersystems.com/wp-content/uploads/2021/03/WebServices-image.png)
+  tabs:
+  - title: VSCode
+    type: service
+    hostname: vscode
+    path: /?folder=/opt/intersystems/src/services
+    port: 8080
+  difficulty: basic
+  timelimit: 500
+- slug: 09-restful-service
+  id: nybykbczjwwh
+  type: challenge
+  title: Your first RESTful Service
+  teaser: Build RESTful Services
+  assignment: |-
+    With the basic JSON support set up, we can build a service.
+    * Copy file `Handler.cls` from `src_Sample/ICO` folder to `src/ICO`
+    * Open and save the file (this time you won’t need the “Overwrite server” option because this class is new).
+
+    Now that we’ve written the middleware REST APIs, the final step in making the services work is to expose them to the web.
+    InterSystems IRIS provides a tool to route web requests to ObjectScript code in much the same way as Node.js Express or Python Flask.
+    Let’s use the Management Portal to hook this IRIS class into the web.
+
+    * Click the *Create New Web Application* button.
+    * Under *Name*, enter `/api/coffeeco` (the base endpoint).
+    * Under *Namespace*, select *USER*.
+    * Make sure *Enable Application* is checked.
+    * Under *Enable*, select *REST*.
+    * For the *Dispatch Class*, type `ICO.Handler` (the IRIS Class all URLs starting with `/api/coffeeco` will be dispatched to).
+    * Under *Security Settings*, check *Unauthenticated* and *Password* for *Allowed Authentication Methods*.
+    * Click *Save* next to the title Edit Web Application.
+
+    Now you will see new tabs, one of which is *Application Roles*.
+    Click that tab, then *%All* under the *Available* list, then click the right arrow to copy it to the *Selected* list. Click *Assign*.
+  notes:
+  - type: text
+    contents: '![image](https://dev-start.intersystems.com/wp-content/uploads/2021/03/IrisCoffee-Sketch3-01-e1616128053104-1024x307.png)'
+  - type: text
+    contents: '![image](https://dev-start.intersystems.com/wp-content/uploads/2021/03/edit_web_app-1024x524.png)'
+  - type: text
+    contents: '![image](https://dev-start.intersystems.com/wp-content/uploads/2021/03/edit_web_app_assign-768x750.png)'
+  tabs:
+  - title: VSCode
+    type: service
+    hostname: vscode
+    path: /?folder=/opt/intersystems/src/services
+    port: 8080
+  - title: IRIS
+    type: service
+    hostname: iris
+    path: /csp/sys/sec/%25CSP.UI.Portal.Applications.WebList.zen?IRISUsername=_SYSTEM&IRISPassword=SYS
+    port: 52773
+  difficulty: basic
+  timelimit: 500
+- slug: 10-roast-coffee-beans
+  id: wvrajhott0ux
+  type: challenge
+  title: Roast coffee beans
+  teaser: A short description of the challenge.
+  assignment: |-
+    In Handler.cls, look at the <Routes> XData section at the end of the file.
+    See that the Url path `/inventory/getbeans/:id/:quantity` calls the ClassMethod GetRawBeans.
+    Notice the URL substitution technique to pass values in the URL.
+
+    Find the *GetRawBeans* ClassMethod in the file. Since we know the primary key of the bean record (it was passed as the `:id` in the URL),
+    we can use ObjectScript’s easy way to query the database with the *%OpenId()*. The rest of the method:
+    * Checks that enough quantity exists
+    * Decrements the quantity requested from inventory
+    * Returns the new inventory quantity to the requestor
+
+    Let’s run an actual request to get beans out of inventory for roasting.
+
+    This request can’t be tested by pasting the URL into a browser because you can’t send POST requests that way, so let’s use curl.
+    In the VSCode’s terminal, type:
+    ```
+    curl -X POST http://iris:52773/api/coffeeco/inventory/getbeans/1/2.4
+    ```
+  notes:
+  - type: text
+    contents: |-
+      Now that you can get a response from a simple URL request, we know the services are working.
+      Let’s operate the coffee business now. First up is simulating taking raw coffee beans out of inventory and roasting them.
+      We’ll use the `/api/coffeeco/inventory/getbeans` API to do this.
+  tabs:
+  - title: VSCode
+    type: service
+    hostname: vscode
+    path: /?folder=/opt/intersystems/src/services
+    port: 8080
+  - title: IRIS
+    type: service
+    hostname: iris
+    path: /csp/sys/UtilHome.csp?IRISUsername=_SYSTEM&IRISPassword=SYS
+    port: 52773
+  difficulty: basic
+  timelimit: 300
+- slug: 11-put-coffee-in-the-store
+  id: qnoswekskxvk
+  type: challenge
+  title: Put coffee in the store
+  teaser: A short description of the challenge.
+  assignment: |-
+    In this simple example, the quantity requested doesn’t get recorded anywhere.
+    We will count on the application making the request to take care of roasting coffee, bagging it and putting it in the store for sale.
+
+    Let’s do that now. In the services/samples directory, you’ll find 2 scripts:
+
+    * createproducts.sh: Creates 5 sample coffee products ready for sale.The first 3 were roasted today,
+    and the last 2 were roasted 6 days ago. This gives us some relatively stale inventory to discount in the store.
+    * loadproducts.sh: Runs a curl command that iterates through every JSON file in the directory and uses the web
+    service you just wrote to load the data into ICO.catalog.
+
+    In the VSCode’s terminal, type
+    ```
+    cd samples
+    sh createproducts.sh
+    sh loadproducts.sh
+    ```
+
+    If you’re not comfortable running a script you didn’t write yourself (which is smart from a security perspective),
+    you can manually run your own curl commands to load the data. Here’s an example:
+    ```
+    curl -X POST -d "@product_brazil_dark.json" \
+     -H "Content-Type: application/json" \
+     http://iris:52773/api/coffeeco/catalog/catalogproduct
+    ```
+  notes:
+  - type: text
+    contents: |-
+      In this simple example, the quantity requested doesn’t get recorded anywhere.
+      We will count on the application making the request to take care of roasting coffee, bagging it and putting it in the store for sale.
+  tabs:
+  - title: VSCode
+    type: service
+    hostname: vscode
+    path: /?folder=/opt/intersystems/src/services
+    port: 8080
+  - title: IRIS
+    type: service
+    hostname: iris
+    path: /csp/sys/UtilHome.csp?IRISUsername=_SYSTEM&IRISPassword=SYS
+    port: 52773
+  difficulty: basic
+  timelimit: 300
+checksum: "2494692544523183657"
