@@ -1,2 +1,0 @@
-GET http://iris:52773/api/coffeeco/inventory/listbeans HTTP/1.1
-
