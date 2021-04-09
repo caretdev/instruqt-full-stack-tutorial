@@ -54,12 +54,33 @@ ClassMethod CachedQuery(scheme, table, sql, failureMsg, ByRef errors)
 }
 EOF
 
+# only one terminal session at once allow
+cat <<'EOF' > /tmp/zstart.mac
+ROUTINE %ZSTART
+#include %syPidtab
+LOGIN
+  Set pids = ""
+  &sql(SELECT %DLIST(id) INTO :pids FROM %SYS.ProcessQuery WHERE Routine = 'shell')
+  If SQLCODE=0 {
+    For i=1:1:$Listlength(pids) {
+      Set pid = $Listget(pids, i)
+      Continue:pid=$Job
+      Do $System.Process.Terminate(pid, 1)
+    }
+  }
+  Quit
+EOF
+
+wget https://intersystems-community.github.io/webterminal/files/WebTerminal-v4.9.3.xml -O /tmp/webterminal.xml
+
 su - irisowner <<EOSU
 /usr/irissys/dev/Cloud/ICM/waitISC.sh
 cat <<'EOF' | iris session iris -U%SYS
 do ##class(Security.Users).UnExpireUserPasswords("*")
 do ##class(Security.Users).Create("tech","%ALL","demo")
 do ##class(%SYSTEM.OBJ).Load("/tmp/Instruqt.Check.cls","ck")
+do ##class(%SYSTEM.OBJ).Load("/tmp/webterminal.xml","ck")
+do ##class(%SYSTEM.OBJ).Load("/tmp/zstart.mac","ck")
 halt
 EOF
 EOSU

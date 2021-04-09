@@ -8,7 +8,7 @@ set msg = "How many records in ICO.inventory?"
 do ##class(%zInstruqt.Check).CachedQuery("ICO", "inventory", sql, msg, .errors)
 
 set sql = "SELECT * FROM ICO . inventory WHERE quantity_kg > ? "
-set msg = "What is about large deliveries?"
+set msg = "Did you query for large deliveries?"
 do ##class(%zInstruqt.Check).CachedQuery("ICO", "inventory", sql, msg, .errors)
 
 set sql = "SELECT * FROM ICO . inventory WHERE vendor_id LIKE ? "

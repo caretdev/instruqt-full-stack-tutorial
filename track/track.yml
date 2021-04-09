@@ -2,25 +2,27 @@ slug: full-stack-tutorial
 id: s0ynild6wctq
 type: track
 title: Full Stack Tutorial
-teaser: Example VSCode track
+teaser: Build the IT infrastructure for a company that roasts and sells delicious,
+  freshly roasted coffee. You’ll learn how the InterSystems IRIS data platform can
+  serve as the backbone of your IT architecture.
 description: |-
-  InterSystems IRIS® data platform provides a fast, reliable database and handles business logic and analytics,
-  creating a strong backbone for the IT architecture of any company. It’s first and foremost your multi-model database,
-  but also can be your middleware to handle business logic, your analytics platform, and also provide machine learning,
-  ETL and IoT processing functions.
+  This tutorial is divided into three parts:
 
-  In this tutorial, we’re going to create the basic information management infrastructure for a small manufacturing company.
-  In this case, our company will be roasting, packaging and selling delicious, freshly roasted coffee beans.
-  Along the way, you’ll learn how the InterSystems IRIS data platform can serve as the backbone of your IT architecture.
-
-  ![overview](https://dev-start.intersystems.com/wp-content/uploads/2020/07/overview_arch.png)
+  - **Part 1:** create database tables and write raw coffee bean deliveries to the database.
+  - **Part 2:** build web services that power the roasting operations and online store.
+  - **Part 3:** build a web storefront in Vue.js
+  ![overview](https://dev-start.intersystems.com/wp-content/uploads/2021/03/IrisCoffee-Sketch1-01-1024x576.png)
 icon: https://cdn.instruqt.com/assets/intersystems/vscode.png
-tags: []
+tags:
+- iris
+- intersystems
+- fullstack
 owner: intersystems
 developers:
 - ade@instruqt.com
 - dmitry@caretdev.com
 - nikolay.solovyev@caretdev.com
+- raj.singh@intersystems.com
 private: true
 published: false
 challenges:
@@ -30,7 +32,9 @@ challenges:
   title: Databases and SQL
   teaser: Database creation
   assignment: |-
-    Paste the following SQL CREATE statement and press Execute.
+    Type <code>/sql</code> in the IRIS Terminal to enter SQL mode.
+
+    Run this SQL CREATE statement:
     ```SQL
     CREATE TABLE ICO.inventory
     (
@@ -41,7 +45,7 @@ challenges:
     )
     ```
 
-    Copy and paste the following SQL CREATE statement to create ICO.catalog table and press Execute.
+    Run this SQL CREATE statement to create ICO.catalog table.
     ```SQL
     CREATE TABLE ICO.catalog
     (
@@ -54,25 +58,38 @@ challenges:
       img VARCHAR(2048)
     )
     ```
+
+    Type <code>/sql</code> in the IRIS Terminal once again to exit SQL mode.
   notes:
+  - type: image
+    url: https://dev-start.intersystems.com/wp-content/uploads/2021/03/IrisCoffee-Sketch-part-1-233x300.png
   - type: text
     contents: |-
-      In this tutorial, we’re going to create the basic information management
-      infrastructure for a small manufacturing company. In this case, our company
-      will be roasting, packaging and selling delicious, freshly roasted coffee beans.
+      IRIS Coffee Company has three major divisions in the company:
 
-      Along the way, you’ll learn how the InterSystems IRIS data platform can serve
-      as the backbone of your IT architecture.
+      - the **warehouse** stores the raw coffee bean inventory. Its data will be in the table <code>ICO.inventory</code>
+      - the **roastery** roasts the beans, and doesn’t need to store data
+      - the **storefront**, where the company sells the roasted coffee. Its data will be in the table <code>ICO.catalog</code>
 
-      It’s divided into three parts:
-      - part 1: create database tables and write raw coffee bean deliveries to the database.
-      - part 2: build web services that power the roasting operations and online store.
-      - part 3: build a web storefront in Vue.js
+      Use the SQL client built into the InterSystems IRIS Terminal to create those two tables using <code>SQL CREATE</code> statements.
   tabs:
+  - title: VSCode
+    type: service
+    hostname: vscode
+    path: /?folder=/opt/intersystems/src/setup
+    port: 8080
+  - title: IRIS Terminal
+    type: terminal
+    hostname: iris
   - title: IRIS
     type: service
     hostname: iris
     path: /csp/sys/exp/%25CSP.UI.Portal.SQL.Home.zen?$NAMESPACE=USER&IRISUsername=_SYSTEM&IRISPassword=SYS
+    port: 52773
+  - title: IRIS Web Terminal
+    type: service
+    hostname: iris
+    path: /terminal/
     port: 52773
   difficulty: basic
   timelimit: 900
@@ -102,6 +119,9 @@ challenges:
     hostname: vscode
     path: /?folder=/opt/intersystems/src/setup
     port: 8080
+  - title: Terminal
+    type: terminal
+    hostname: vscode
   difficulty: basic
   timelimit: 900
 - slug: 03-sql-queries
@@ -139,6 +159,9 @@ challenges:
     hostname: vscode
     path: /?folder=/opt/intersystems/src/setup
     port: 8080
+  - title: Terminal
+    type: terminal
+    hostname: vscode
   difficulty: basic
   timelimit: 900
 - slug: 04-add-new-inventory
@@ -152,6 +175,9 @@ challenges:
     Change the values as you like.
 
     Run python `manifest_importer.py` again.
+    ```
+    python3 manifest_importer.py
+    ```
   notes:
   - type: text
     contents: Finally, add more inventory on your own.
@@ -161,6 +187,9 @@ challenges:
     hostname: vscode
     path: /?folder=/opt/intersystems/src/setup
     port: 8080
+  - title: Terminal
+    type: terminal
+    hostname: vscode
   - title: IRIS
     type: service
     hostname: iris
@@ -232,6 +261,9 @@ challenges:
     hostname: iris
     path: /csp/sys/exp/%25CSP.UI.Portal.SQL.Home.zen?$NAMESPACE=USER&IRISUsername=_SYSTEM&IRISPassword=SYS
     port: 52773
+  - title: Terminal
+    type: terminal
+    hostname: vscode
   difficulty: basic
   timelimit: 500
 - slug: 06-db-query
@@ -276,6 +308,9 @@ challenges:
     hostname: iris
     path: /csp/sys/UtilHome.csp?IRISUsername=_SYSTEM&IRISPassword=SYS
     port: 52773
+  - title: Terminal
+    type: terminal
+    hostname: vscode
   difficulty: basic
   timelimit: 500
 - slug: 07-os-classes
@@ -328,6 +363,9 @@ challenges:
   - title: IRIS Terminal
     type: terminal
     hostname: iris
+  - title: Terminal
+    type: terminal
+    hostname: vscode
   difficulty: basic
   timelimit: 500
 - slug: 08-build-web-services
@@ -433,6 +471,9 @@ challenges:
     hostname: vscode
     path: /?folder=/opt/intersystems/src/services
     port: 8080
+  - title: Terminal
+    type: terminal
+    hostname: vscode
   - title: IRIS
     type: service
     hostname: iris
@@ -478,6 +519,9 @@ challenges:
     hostname: vscode
     path: /?folder=/opt/intersystems/src/services
     port: 8080
+  - title: Terminal
+    type: terminal
+    hostname: vscode
   - title: IRIS
     type: service
     hostname: iris
@@ -529,6 +573,9 @@ challenges:
     hostname: vscode
     path: /?folder=/opt/intersystems/src/services
     port: 8080
+  - title: Terminal
+    type: terminal
+    hostname: vscode
   - title: IRIS
     type: service
     hostname: iris
@@ -545,7 +592,7 @@ challenges:
   title: Make a sale
   teaser: A short description of the challenge.
   assignment: |-
-    === Try out the services
+    ### Try out the services
     Query for fresh products:
     ```
     curl http://iris:52773/api/coffeeco/catalog/getproducts
@@ -596,6 +643,9 @@ challenges:
   - title: IRIS Terminal
     type: terminal
     hostname: iris
+  - title: Terminal
+    type: terminal
+    hostname: vscode
   difficulty: basic
   timelimit: 300
 - slug: 13-view-the-storefront
@@ -647,6 +697,9 @@ challenges:
   - title: IRIS Terminal
     type: terminal
     hostname: iris
+  - title: Terminal
+    type: terminal
+    hostname: vscode
   difficulty: basic
   timelimit: 300
-checksum: "7367837855220350674"
+checksum: "15550340595671896434"

@@ -96,6 +96,8 @@ cat <<EOF > ~/.local/share/code-server/User/settings.json
     "username": "tech",
     "password": "demo"
   },
+  "sqltools.autoConnectTo": ["IRIS"],
+  "sqltools.autoOpenSessionFiles": true,
   "sqltools.connections": [
     {
       "namespace": "USER",
