@@ -11,7 +11,7 @@ description: |-
   - **Part 1:** create database tables and write raw coffee bean deliveries to the database.
   - **Part 2:** build web services that power the roasting operations and online store.
   - **Part 3:** build a web storefront in Vue.js
-  ![overview](https://dev-start.intersystems.com/wp-content/uploads/2021/03/IrisCoffee-Sketch1-01-1024x576.png)
+  ![overview](https://gettingstarted.intersystems.com/wp-content/uploads/2021/03/IrisCoffee-Sketch1-01-500x281.png)
 icon: https://cdn.instruqt.com/assets/intersystems/vscode.png
 tags:
 - iris
@@ -30,11 +30,12 @@ challenges:
   id: rc49n14ohxmg
   type: challenge
   title: Databases and SQL
-  teaser: Database creation
+  teaser: Database creation with raw SQL
   assignment: |-
-    Type <code>/sql</code> in the IRIS Terminal to enter SQL mode.
+    Copy and Paste the following SQL CREATE statement in the SQL "Execute Query" box on the left (below the "Execute" button) to create the <code>ICO.inventory</code> table.
 
-    Run this SQL CREATE statement:
+    Then press the "Execute" button to run the query.
+
     ```SQL
     CREATE TABLE ICO.inventory
     (
@@ -45,7 +46,10 @@ challenges:
     )
     ```
 
-    Run this SQL CREATE statement to create ICO.catalog table.
+    Delete that statement, then copy and paste the following to create the <code>ICO.catalog table</code>.
+
+    Press the "Execute" button to run the query.
+
     ```SQL
     CREATE TABLE ICO.catalog
     (
@@ -58,8 +62,6 @@ challenges:
       img VARCHAR(2048)
     )
     ```
-
-    Type <code>/sql</code> in the IRIS Terminal once again to exit SQL mode.
   notes:
   - type: image
     url: https://dev-start.intersystems.com/wp-content/uploads/2021/03/IrisCoffee-Sketch-part-1-233x300.png
@@ -73,23 +75,10 @@ challenges:
 
       Use the SQL client built into the InterSystems IRIS Terminal to create those two tables using <code>SQL CREATE</code> statements.
   tabs:
-  - title: VSCode
-    type: service
-    hostname: vscode
-    path: /?folder=/opt/intersystems/src/setup
-    port: 8080
-  - title: IRIS Terminal
-    type: terminal
-    hostname: iris
   - title: IRIS
     type: service
     hostname: iris
     path: /csp/sys/exp/%25CSP.UI.Portal.SQL.Home.zen?$NAMESPACE=USER&IRISUsername=_SYSTEM&IRISPassword=SYS
-    port: 52773
-  - title: IRIS Web Terminal
-    type: service
-    hostname: iris
-    path: /terminal/
     port: 52773
   difficulty: basic
   timelimit: 900
@@ -97,9 +86,11 @@ challenges:
   id: 101uev0fgbmq
   type: challenge
   title: Python data loading
-  teaser: A short description of the challenge.
+  teaser: Use SQL in a Python script for more flexibility
   assignment: |-
-    Open terminal, from menu View.
+    ## Run the inventory import script
+
+    In the terminal on the left, run the following commands.
 
     Setup odbc driver
     ```
@@ -110,18 +101,76 @@ challenges:
     ```
     python3 manifest_importer.py
     ```
+
+    ## Python script walkthrough
+
+    In you are interested in the details of how the script works, click on the VSCode tab and follow along. The <code>manifest_importer.py</code> file should be open for you.
+
+    Notice some of the key elements of this script. In the main function definition, we simply import the JSON order manifest file and validate it, checking for the structure needed for the inventory database.
+    ```python
+    def main():
+        with open('./order_manifest.json') as f:
+        data = json.load(f)
+        data, status, exp = validate_manifest(data)
+    ```
+    The next thing we do in main() is read database credentials from the file, <code>connection.config</code>.
+    ```python
+    connection_detail = get_connection_info("connection.config")
+    ip = connection_detail["ip"]
+    port = int(connection_detail["port"])
+    namespace = connection_detail["namespace"]
+    username = connection_detail["username"]
+    password = connection_detail["password"]
+    driver = "{InterSystems ODBC}"
+    ```
+
+    Then we set up a connection to the database using an ODBC driver.
+    ```python
+    connection_string = 'DRIVER={};SERVER={};PORT={};DATABASE={};UID={};PWD={}' \
+    .format(driver, ip, port, namespace, username, password)
+    connection = pyodbc.connect(connection_string)
+    ```
+
+    If all goes well, we call load_manifest with the JSON data and the database connection object.
+    ```python
+    msg = load_manifest(data, connection)
+    ```
+
+    In load_manifest, we iterate through all the items in the JSON file, inserting each one into the ICO.inventory table we created previously using SQL INSERT statements. Here’s how that works: First, we define our base SQL INSERT statement:
+    ```python
+    fieldnamesql = "INSERT INTO ICO.inventory (vendor_id, vendor_product_code, quantity_kg, date_arrival)"
+    ```
+
+    On the next two lines, we create a new date string based on the current date, for example, ‘2020-06-18’. This will be the date the product arrived in the warehouse.
+    ```python
+    today = date.today()
+    mydate = today.strftime("%Y-%m-%d")
+    ```
+
+    Now, the code loops through each item object in the JSON file, and uses the data there to construct the VALUES part of our SQL INSERT statement. The result is a completed SQL INSERT statement that looks something like this:
+    ```sql
+    INSERT INTO ICO.inventory (vendor_id, vendor_product_code, quantity_kg, date_arrival) VALUES (ETRADER, ETHIOPIA32, 200, ‘2020-06-18’)
+    ```
+
+    Now the code runs the completed SQL statement. We defined our database cursor on the first line of the function, so now we can run execute on the cursor with the SQL statement as its input.
+    ```python
+    cursor.execute(valsql)
+    ```
   notes:
   - type: text
-    contents: Replace this text with your own text
+    contents: |-
+      In this challenge, we will populate the database with raw coffee bean orders, simulating shipments of raw beans from vendors around the world. Assume that all the shipments are consolidated in a single order manifest in JSON format.
+
+      To load the data, we’ll use a Python program to parse the order manifest file and insert the deliveries into the database, also using SQL, but this time within Python.
   tabs:
+  - title: Terminal
+    type: terminal
+    hostname: vscode
   - title: VSCode
     type: service
     hostname: vscode
     path: /?folder=/opt/intersystems/src/setup
     port: 8080
-  - title: Terminal
-    type: terminal
-    hostname: vscode
   difficulty: basic
   timelimit: 900
 - slug: 03-sql-queries
@@ -147,21 +196,13 @@ challenges:
     ```
   notes:
   - type: text
-    contents: Let’s make sure the data was inserted
+    contents: Let’s check out what we now have in inventory with some SQL queries!
   tabs:
   - title: IRIS
     type: service
     hostname: iris
     path: /csp/sys/exp/%25CSP.UI.Portal.SQL.Home.zen?$NAMESPACE=USER&IRISUsername=_SYSTEM&IRISPassword=SYS
     port: 52773
-  - title: VSCode
-    type: service
-    hostname: vscode
-    path: /?folder=/opt/intersystems/src/setup
-    port: 8080
-  - title: Terminal
-    type: terminal
-    hostname: vscode
   difficulty: basic
   timelimit: 900
 - slug: 04-add-new-inventory
@@ -176,7 +217,7 @@ challenges:
 
     Run python `manifest_importer.py` again.
     ```
-    python3 manifest_importer.py
+    python manifest_importer.py
     ```
   notes:
   - type: text
@@ -190,13 +231,24 @@ challenges:
   - title: Terminal
     type: terminal
     hostname: vscode
-  - title: IRIS
-    type: service
-    hostname: iris
-    path: /csp/sys/exp/%25CSP.UI.Portal.SQL.Home.zen?$NAMESPACE=USER&IRISUsername=_SYSTEM&IRISPassword=SYS
-    port: 52773
   difficulty: basic
   timelimit: 900
+- slug: quiz-sql
+  id: o8llslesr7gu
+  type: quiz
+  title: 'Learning check: IRIS and SQL'
+  teaser: Test your knowledge about using SQL with InterSystems IRIS
+  assignment: With which common languages can you use InterSystems IRIS and SQL?
+  answers:
+  - Python
+  - Java
+  - Node.js
+  - C#/.NET
+  - All of the above
+  solution:
+  - 4
+  difficulty: basic
+  timelimit: 500
 - slug: 05-os-db-query
   id: cs0hpvve8izh
   type: challenge
@@ -702,4 +754,4 @@ challenges:
     hostname: vscode
   difficulty: basic
   timelimit: 300
-checksum: "15550340595671896434"
+checksum: "16439569286126231308"
