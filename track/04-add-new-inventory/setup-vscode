@@ -1,6 +1,0 @@
-#!/bin/bash
-
-cd /opt/intersystems/src/setup/
-md5sum order_manifest.json > /tmp/order_manifest.json.md5
-
-code manifest_importer.py

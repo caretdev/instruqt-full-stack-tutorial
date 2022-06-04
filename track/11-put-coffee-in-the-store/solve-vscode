@@ -1,6 +1,0 @@
-#!/bin/bash
-
-pushd /opt/intersystems/src/services/samples
-sh createproducts.sh
-sh loadproducts.sh
-popd

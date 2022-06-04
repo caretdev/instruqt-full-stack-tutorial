@@ -1,6 +1,0 @@
-#!/bin/bash
-
-su - coder <<'EOSU'
-cd /opt/intersystems/src/frontend
-yarn install
-EOSU

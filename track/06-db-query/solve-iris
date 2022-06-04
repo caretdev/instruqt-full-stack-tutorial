@@ -1,8 +1,0 @@
-#!/bin/bash
-
-su - irisowner <<EOSU
-cat <<EOF | iris session iris -UUSER
-set tRes = ##class(%SQL.Statement).%ExecDirect(,"SELECT * FROM ICO.inventory ORDER BY vendor_id")
-halt
-EOF
-EOSU
