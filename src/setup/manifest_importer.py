@@ -100,6 +100,7 @@ def main():
 
         print(connection_string)
         connection = pyodbc.connect(connection_string)
+        connection.setencoding(encoding='utf-8')
         print("Connected to InterSystems IRIS")
 
         msg = load_manifest(data, connection)
