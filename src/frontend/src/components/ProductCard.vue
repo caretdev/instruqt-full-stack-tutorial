@@ -2,17 +2,33 @@
   <li class="product-card">
     <img :src="'/' + product.img">
     <div class="product-details">
-      <div class="title">{{product.product_code}}</div>
-      <div class="notes">{{product.roasting_notes}}</div>
-      <div class="roasted">Roasted on: {{product.time_roasted | moment}}</div>
+      <div class="title">
+        {{ product.product_code }}
+      </div>
+      <div class="notes">
+        {{ product.roasting_notes }}
+      </div>
+      <div class="roasted">
+        Roasted on: {{ time_roasted }}
+      </div>
       <div class="price-order">
         <div class="order">
           <form @submit.prevent="processOrder">
-          <input type="number" name="q" min=1 :max=product.quantity v-model=orderquantity>
-          <button type="submit">Place Order</button>
+            <input
+              v-model="orderquantity"
+              type="number"
+              name="q"
+              min="1"
+              :max="product.quantity"
+            >
+            <button type="submit">
+              Place Order
+            </button>
           </form>
         </div>
-        <div class="price">Price per bag: <span class="pricenum">{{product.price}}</span></div>
+        <div class="price">
+          Price per bag: <span class="pricenum">{{ product.price }}</span>
+        </div>
       </div>
     </div>
   </li>
@@ -24,7 +40,17 @@ import moment from 'moment';
 
 export default {
   name: 'ProductCard',
-  props: ['product'],
+  filters: {
+    moment(date) {
+      return moment(date).format('MMMM Do');
+    },
+  },
+  props: {
+    product: {
+      type: Object,
+      required: true,
+    }
+  },
   data() {
     return {
       orderquantity: 1,
@@ -32,10 +58,10 @@ export default {
       catalog_id: this.product.catalog_id,
     };
   },
-  filters: {
-    moment(date) {
-      return moment(date).format('MMMM Do');
-    },
+  computed: {
+    time_roasted() {
+      return moment(this.product.time_roasted).format('MMMM Do')
+    }
   },
   methods: {
     processOrder() {
@@ -60,6 +86,7 @@ ul {
   list-style-type: none;
   padding: 0;
 }
+
 li.product-card {
   display: flex;
   margin: 24px 0;
@@ -67,30 +94,37 @@ li.product-card {
   margin-left: auto;
   margin-right: auto;
 }
-li.product-card > img {
+
+li.product-card>img {
   width: 156px;
 }
-li.product-card > div.product-details {
+
+li.product-card>div.product-details {
   padding: 0 0 0 24px;
   position: relative;
 }
-div.product-details > .title {
+
+div.product-details>.title {
   color: #333695;
   font-weight: 900;
   margin-bottom: 12px;
 }
-div.product-details > .notes {
+
+div.product-details>.notes {
   font-style: italic;
   margin-bottom: 12px;
 }
-div.product-details > .price {
+
+div.product-details>.price {
   font-weight: 500;
   position: absolute;
   bottom: 0;
 }
+
 .price-order {
   display: inline;
 }
+
 .order {
   float: right;
 }

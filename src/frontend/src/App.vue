@@ -2,11 +2,17 @@
   <div id="app">
     <h1>IRIS Coffee Company</h1>
     <div id="nav">
-      <router-link to="/">Home</router-link> |
-      <router-link to="/sale">Last chance</router-link> |
-      <router-link to="/about">About</router-link>
+      <router-link to="/">
+        Home
+      </router-link> |
+      <router-link to="/sale">
+        Last chance
+      </router-link> |
+      <router-link to="/about">
+        About
+      </router-link>
     </div>
-    <router-view/>
+    <router-view />
   </div>
 </template>
 

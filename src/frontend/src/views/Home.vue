@@ -3,14 +3,18 @@
     <p v-if="loading">
       Loading...
     </p>
-    <h2 class="warning" v-if="products.length == 0">
+    <h2
+      v-if="products.length == 0"
+      class="warning"
+    >
       No fresh products right now.
     </h2>
     <ul v-else>
       <product-card
         v-for="product in products"
         :key="product.catalog_id"
-        :product='product' />
+        :product="product"
+      />
     </ul>
   </div>
 </template>
